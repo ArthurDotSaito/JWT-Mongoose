@@ -23,17 +23,21 @@ export class AuthService {
   }
 
   public async validateUser(userId: string): Promise<User> {
-    const user = await this.usersModel.find({ _id: userId });
+    const user = await this.usersModel.findOne({ _id: userId });
     if (!user) throw new UnauthorizedException('User not found');
     return user;
   }
 
-  private jwtExtractor(request: Request): string {
+  private static jwtExtractor(request: Request): string {
     const authHeader = request.headers.authorization;
     if (!authHeader) throw new BadRequestException('Bad Request');
 
     const [, token] = authHeader.split(' ');
 
     return token;
+  }
+
+  public returnJwtExtractor(): (req: Request) => string {
+    return AuthService.jwtExtractor;
   }
 }
