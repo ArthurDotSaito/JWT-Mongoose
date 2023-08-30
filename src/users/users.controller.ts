@@ -1,9 +1,19 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { UsersService } from './users.service';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+
+import { SignInDTO } from './dto/signin-dto';
 import { SignupDTO } from './dto/signup-dto';
 import { User } from './models/users.model';
-import { SignInDTO } from './dto/signin-dto';
 import { UserSignIn } from './types/UserSignIn';
+import { UsersService } from './users.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -19,5 +29,12 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   public async signIn(@Body() signInDto: SignInDTO): Promise<UserSignIn> {
     return this.UsersService.signIn(signInDto);
+  }
+
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  public async findAll(): Promise<User[]> {
+    return this.UsersService.findAll();
   }
 }
