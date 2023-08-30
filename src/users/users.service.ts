@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { AuthService } from 'src/auth/auth.service';
 import { SignupDTO } from './dto/signup-dto';
 import { SignInDTO } from './dto/signin-dto';
+import { UserSignIn } from './types/UserSignIn';
 
 @Injectable()
 export class UsersService {
@@ -19,9 +20,7 @@ export class UsersService {
     const user = new this.usersModel(signUpDto);
     return user.save();
   }
-  public async signIn(
-    signInDto: SignInDTO,
-  ): Promise<{ name: string; jwtToken: string; email: string }> {
+  public async signIn(signInDto: SignInDTO): Promise<UserSignIn> {
     const user = await this.findByEmail(signInDto.email);
     const match = await this.checkPassword(signInDto.password, user);
     if (!user) throw new NotFoundException('Invalid Credentials');
